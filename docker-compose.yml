@@ -1,98 +1,98 @@
 services:
-    mongo1:
-      image: mongo:latest
-      container_name: mongo1
-      hostname: mongo1
-      restart: always
-      ports:
-        - "27017:27017"
-      networks:
-        - mongo-cluster
-      volumes:
-        - mongo1_data:/data/db
-      command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+      mongo1:
+        image: mongo:latest
+        container_name: mongo1
+        hostname: mongo1
+        restart: always
+        ports:
+          - "27017:27017"
+        networks:
+          - mongo-cluster
+        volumes:
+          - mongo1_data:/data/db
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
 
-    mongo2:
-      image: mongo:latest
-      container_name: mongo2
-      hostname: mongo2
-      restart: always
-      ports:
-        - "27018:27017"
-      networks:
-        - mongo-cluster
-      volumes:
-        - mongo2_data:/data/db
-      command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+      mongo2:
+        image: mongo:latest
+        container_name: mongo2
+        hostname: mongo2
+        restart: always
+        ports:
+          - "27018:27017"
+        networks:
+          - mongo-cluster
+        volumes:
+          - mongo2_data:/data/db
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
 
-    mongo3:
-      image: mongo:latest
-      container_name: mongo3
-      hostname: mongo3
-      restart: always
-      ports:
-        - "27019:27017"
-      networks:
-        - mongo-cluster
-      volumes:
-        - mongo3_data:/data/db
-      command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+      mongo3:
+        image: mongo:latest
+        container_name: mongo3
+        hostname: mongo3
+        restart: always
+        ports:
+          - "27019:27017"
+        networks:
+          - mongo-cluster
+        volumes:
+          - mongo3_data:/data/db
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
 
-    config1:
-      image: mongo:latest
-      container_name: config1
-      hostname: config1
-      restart: always
-      ports:
-        - "27020:27017"
-      networks:
-        - mongo-cluster
-      command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+      config1:
+        image: mongo:latest
+        container_name: config1
+        hostname: config1
+        restart: always
+        ports:
+          - "27020:27017"
+        networks:
+          - mongo-cluster
+        command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
-    config2:
-      image: mongo:latest
-      container_name: config2
-      hostname: config2
-      restart: always
-      ports:
-        - "27021:27017"
-      networks:
-        - mongo-cluster
-      command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+      config2:
+        image: mongo:latest
+        container_name: config2
+        hostname: config2
+        restart: always
+        ports:
+          - "27021:27017"
+        networks:
+          - mongo-cluster
+        command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
-    config3:
-      image: mongo:latest
-      container_name: config3
-      hostname: config3
-      restart: always
-      ports:
-        - "27022:27017"
-      networks:
-        - mongo-cluster
-      command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+      config3:
+        image: mongo:latest
+        container_name: config3
+        hostname: config3
+        restart: always
+        ports:
+          - "27022:27017"
+        networks:
+          - mongo-cluster
+        command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
-    mongos:
-      image: mongo:latest
-      container_name: mongos
-      hostname: mongos
-      restart: always
-      ports:
-        - "27017:27017"
-      networks:
-        - mongo-cluster
-      command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
-      depends_on:
-        - config1
-        - config2
-        - config3
-        - mongo1
-        - mongo2
-        - mongo3
+      mongos:
+        image: mongo:latest
+        container_name: mongos
+        hostname: mongos
+        restart: always
+        ports:
+          - "27017:27017"
+        networks:
+          - mongo-cluster
+        command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all", "--auth"]
+        depends_on:
+          - config1
+          - config2
+          - config3
+          - mongo1
+          - mongo2
+          - mongo3
 
-  networks:
-    mongo-cluster:
+    networks:
+      mongo-cluster:
 
-  volumes:
-    mongo1_data:
-    mongo2_data:
-    mongo3_data:
+    volumes:
+      mongo1_data:
+      mongo2_data:
+      mongo3_data:
