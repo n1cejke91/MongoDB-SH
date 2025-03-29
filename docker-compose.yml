@@ -1,91 +1,99 @@
+version: "3.8"
 services:
-  # Конфигурационные серверы
-  config1:
+  mongo1:
     image: mongo:latest
-    container_name: config1
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    container_name: mongo1
+    hostname: mongo1
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - mongo-cluster
+    volumes:
+      - mongo1_data:/data/db
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    hostname: mongo2
+    restart: always
     ports:
       - "27018:27017"
     networks:
-      - mongodb-sh_mongo-cluster
+      - mongo-cluster
     volumes:
-      - config1_data:/data/db
+      - mongo2_data:/data/db
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+
+  mongo3:
+    image: mongo:latest
+    container_name: mongo3
+    hostname: mongo3
+    restart: always
+    ports:
+      - "27019:27017"
+    networks:
+      - mongo-cluster
+    volumes:
+      - mongo3_data:/data/db
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+
+  config1:
+    image: mongo:latest
+    container_name: config1
+    hostname: config1
+    restart: always
+    ports:
+      - "27020:27017"
+    networks:
+      - mongo-cluster
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
   config2:
     image: mongo:latest
     container_name: config2
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    hostname: config2
+    restart: always
     ports:
-      - "27019:27017"
+      - "27021:27017"
     networks:
-      - mongodb-sh_mongo-cluster
-    volumes:
-      - config2_data:/data/db
+      - mongo-cluster
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
   config3:
     image: mongo:latest
     container_name: config3
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
-    ports:
-      - "27020:27017"
-    networks:
-      - mongodb-sh_mongo-cluster
-    volumes:
-      - config3_data:/data/db
-
-  # Шард (репликационный набор)
-  shard1_1:
-    image: mongo:latest
-    container_name: shard1_1
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
-    ports:
-      - "27021:27017"
-    networks:
-      - mongodb-sh_mongo-cluster
-    volumes:
-      - shard1_1_data:/data/db
-
-  shard1_2:
-    image: mongo:latest
-    container_name: shard1_2
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    hostname: config3
+    restart: always
     ports:
       - "27022:27017"
     networks:
-      - mongodb-sh_mongo-cluster
-    volumes:
-      - shard1_2_data:/data/db
+      - mongo-cluster
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
 
-  shard1_3:
-    image: mongo:latest
-    container_name: shard1_3
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
-    ports:
-      - "27023:27017"
-    networks:
-      - mongodb-sh_mongo-cluster
-    volumes:
-      - shard1_3_data:/data/db
-
-  # Mongos - маршрутизатор
   mongos:
     image: mongo:latest
     container_name: mongos
-    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
+    hostname: mongos
+    restart: always
     ports:
-      - "27017:27017"
+      - "27023:27017" # Изменили порт на 27023
     networks:
-      - mongodb-sh_mongo-cluster
+      - mongo-cluster
+    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all", "--auth"]
+    depends_on:
+      - config1
+      - config2
+      - config3
+      - mongo1
+      - mongo2
+      - mongo3
 
-# Определение сети
 networks:
-  mongodb-sh_mongo-cluster:
+  mongo-cluster:
 
-# Определение томов для хранения данных
 volumes:
-  config1_data:
-  config2_data:
-  config3_data:
-  shard1_1_data:
-  shard1_2_data:
-  shard1_3_data:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
