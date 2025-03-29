@@ -10,7 +10,7 @@ services:
       - mongo-cluster
     volumes:
       - mongo1_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
 
   mongo2:
     image: mongo:latest
@@ -23,7 +23,7 @@ services:
       - mongo-cluster
     volumes:
       - mongo2_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
 
   mongo3:
     image: mongo:latest
@@ -36,7 +36,7 @@ services:
       - mongo-cluster
     volumes:
       - mongo3_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
 
   config1:
     image: mongo:latest
@@ -47,7 +47,7 @@ services:
       - "27020:27017"
     networks:
       - mongo-cluster
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
 
   config2:
     image: mongo:latest
@@ -58,7 +58,7 @@ services:
       - "27021:27017"
     networks:
       - mongo-cluster
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
 
   config3:
     image: mongo:latest
@@ -69,7 +69,7 @@ services:
       - "27022:27017"
     networks:
       - mongo-cluster
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all", "--auth"]
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
 
   mongos:
     image: mongo:latest
@@ -80,7 +80,7 @@ services:
       - "27017:27017"
     networks:
       - mongo-cluster
-    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all", "--auth"]
+    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
     depends_on:
       - config1
       - config2
