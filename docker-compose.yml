@@ -7,7 +7,7 @@ services:
     ports:
       - "27018:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - config1_data:/data/db
 
@@ -18,7 +18,7 @@ services:
     ports:
       - "27019:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - config2_data:/data/db
 
@@ -29,7 +29,7 @@ services:
     ports:
       - "27020:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - config3_data:/data/db
 
@@ -41,7 +41,7 @@ services:
     ports:
       - "27021:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - shard1_1_data:/data/db
 
@@ -52,7 +52,7 @@ services:
     ports:
       - "27022:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - shard1_2_data:/data/db
 
@@ -63,7 +63,7 @@ services:
     ports:
       - "27023:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
     volumes:
       - shard1_3_data:/data/db
 
@@ -75,11 +75,11 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - mongo-cluster
+      - mongodb-sh_mongo-cluster
 
 # Определение сети
 networks:
-  mongo-cluster:
+  mongodb-sh_mongo-cluster:
 
 # Определение томов для хранения данных
 volumes:
