@@ -1,98 +1,120 @@
 services:
-  mongo1:
-    image: mongo:latest
-    container_name: mongo1
-    hostname: mongo1
-    restart: always
-    ports:
-      - "27017:27017"
-    networks:
-      - mongo-cluster
-    volumes:
-      - mongo1_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-
-  mongo2:
-    image: mongo:latest
-    container_name: mongo2
-    hostname: mongo2
-    restart: always
-    ports:
-      - "27018:27017"
-    networks:
-      - mongo-cluster
-    volumes:
-      - mongo2_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-
-  mongo3:
-    image: mongo:latest
-    container_name: mongo3
-    hostname: mongo3
-    restart: always
-    ports:
-      - "27019:27017"
-    networks:
-      - mongo-cluster
-    volumes:
-      - mongo3_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-
+  # Конфигурационные серверы
   config1:
     image: mongo:latest
     container_name: config1
-    hostname: config1
-    restart: always
-    ports:
-      - "27020:27017"
-    networks:
-      - mongo-cluster
     command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
-
-  config2:
-    image: mongo:latest
-    container_name: config2
-    hostname: config2
-    restart: always
     ports:
       - "27021:27017"
     networks:
       - mongo-cluster
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    volumes:
+      - config1_data:/data/db
 
-  config3:
+  config2:
     image: mongo:latest
-    container_name: config3
-    hostname: config3
-    restart: always
+    container_name: config2
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
     ports:
       - "27022:27017"
     networks:
       - mongo-cluster
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    volumes:
+      - config2_data:/data/db
 
+  config3:
+    image: mongo:latest
+    container_name: config3
+    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    ports:
+      - "27023:27017"
+    networks:
+      - mongo-cluster
+    volumes:
+      - config3_data:/data/db
+
+  # Шард 1
+  shard1_1:
+    image: mongo:latest
+    container_name: shard1_1
+    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    ports:
+      - "27024:27017"
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard1_1_data:/data/db
+
+  shard1_2:
+    image: mongo:latest
+    container_name: shard1_2
+    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard1_2_data:/data/db
+
+  shard1_3:
+    image: mongo:latest
+    container_name: shard1_3
+    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard1_3_data:/data/db
+
+  # Шард 2
+  shard2_1:
+    image: mongo:latest
+    container_name: shard2_1
+    command: ["mongod", "--shardsvr", "--replSet", "shard2ReplSet", "--bind_ip_all"]
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard2_1_data:/data/db
+
+  shard2_2:
+    image: mongo:latest
+    container_name: shard2_2
+    command: ["mongod", "--shardsvr", "--replSet", "shard2ReplSet", "--bind_ip_all"]
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard2_2_data:/data/db
+
+  shard2_3:
+    image: mongo:latest
+    container_name: shard2_3
+    command: ["mongod", "--shardsvr", "--replSet", "shard2ReplSet", "--bind_ip_all"]
+    networks:
+      - mongo-cluster
+    volumes:
+      - shard2_3_data:/data/db
+
+  # Mongos
   mongos:
     image: mongo:latest
     container_name: mongos
-    hostname: mongos
-    restart: always
+    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
     ports:
-      - "27023:27017" # Изменили порт на 27023
+      - "27017:27017"
     networks:
       - mongo-cluster
-    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
     depends_on:
       - config1
       - config2
       - config3
-      - mongo1
-      - mongo2
-      - mongo3
 
 networks:
   mongo-cluster:
 
 volumes:
-  mongo1_data:
-  mongo2_data:
-  mongo3_data:
+  config1_data:
+  config2_data:
+  config3_data:
+  shard1_1_data:
+  shard1_2_data:
+  shard1_3_data:
+  shard2_1_data:
+  shard2_2_data:
+  shard2_3_data:
