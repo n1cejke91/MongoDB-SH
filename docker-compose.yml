@@ -77,7 +77,7 @@ services:
     hostname: mongos
     restart: always
     ports:
-      - "27017:27017"
+      - "27023:27017"
     networks:
       - mongo-cluster
     command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
