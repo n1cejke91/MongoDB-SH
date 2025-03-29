@@ -80,7 +80,7 @@ services:
       - "27023:27017"
     networks:
       - mongo-cluster
-    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all", "--auth"]
+    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
     depends_on:
       - config1
       - config2
