@@ -16,36 +16,36 @@
 ### Инициализация конфигурационных серверов
 Подключиться к одному из них:
 ```sh
-docker exec -it config1 mongosh
+docker exec -it configdb1 mongosh
 ```
 
 Выполнить:
 ```js
 rs.initiate({
-  _id: "configReplSet",
+  _id: "cfgreplset",
   configsvr: true,
   members: [
-    { _id: 0, host: "config1:27017" },
-    { _id: 1, host: "config2:27017" },
-    { _id: 2, host: "config3:27017" }
-  ]
-})
+    { _id: 0, host: "configdb1:27017" },
+    { _id: 1, host: "configdb2:27017" },
+    { _id: 2, host: "configdb3:27017" },
+  ],
+});
 ```
 
 ### Инициализация шарда
 Подключиться к первому узлу шарда и выполнить:
 ```sh
-docker exec -it shard1_1 mongosh
+docker exec -it shard1-repl1 mongosh
 ```
 ```js
 rs.initiate({
-  _id: "shard1ReplSet",
+  _id: "shard1",
   members: [
-    { _id: 0, host: "shard1_1:27017" },
-    { _id: 1, host: "shard1_2:27017" },
-    { _id: 2, host: "shard1_3:27017" }
-  ]
-})
+    { _id: 0, host: "shard1-repl1:27017" },
+    { _id: 1, host: "shard1-repl2:27017" },
+    { _id: 2, host: "shard1-repl3:27017" },
+  ],
+});
 ```
 
 ### Добавление шарда в `mongos`
@@ -54,7 +54,7 @@ rs.initiate({
 docker exec -it mongos mongosh
 ```
 ```js
-sh.addShard("shard1ReplSet/shard1_1:27017")
+sh.addShard("shard1/shard1-repl1:27017");
 sh.status()
 ```
 
