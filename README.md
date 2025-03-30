@@ -61,7 +61,7 @@ sh.status()
 ## Выбор ключа шардирования и балансировка
 Импорт базы данных и создание коллекции с шардированием:
 ```sh
-docker cp ~/MongoDB-RS/airbnb_data.json config1:/airbnb_data.json
+docker cp ~/MongoDB-SH/airbnb_data.json config1:/airbnb_data.json
 ```
 ```sh
 docker exec -it config1 mongoimport --db airbnb --collection booking --file /airbnb_data.json
