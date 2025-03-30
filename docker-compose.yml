@@ -1,91 +1,86 @@
 services:
-  # Конфигурационные серверы
-  config1:
+  configdb1:
     image: mongo:latest
-    container_name: config1
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    command: mongod --configsvr --replSet cfgreplset --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27017:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - config1_data:/data/db
+      - configdb1-data:/data/db
+    networks:
+      - mongo-network
 
-  config2:
+  configdb2:
     image: mongo:latest
-    container_name: config2
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    command: mongod --configsvr --replSet cfgreplset --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27018:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - config2_data:/data/db
+      - configdb2-data:/data/db
+    networks:
+      - mongo-network
 
-  config3:
+  configdb3:
     image: mongo:latest
-    container_name: config3
-    command: ["mongod", "--configsvr", "--replSet", "configReplSet", "--bind_ip_all"]
+    command: mongod --configsvr --replSet cfgreplset --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27019:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - config3_data:/data/db
+      - configdb3-data:/data/db
+    networks:
+      - mongo-network
 
-  # Шард (репликационный набор)
-  shard1_1:
+  shard1-repl1:
     image: mongo:latest
-    container_name: shard1_1
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    command: mongod --shardsvr --replSet shard1 --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27020:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - shard1_1_data:/data/db
+      - shard1-repl1-data:/data/db
+    networks:
+      - mongo-network
 
-  shard1_2:
+  shard1-repl2:
     image: mongo:latest
-    container_name: shard1_2
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    command: mongod --shardsvr --replSet shard1 --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27021:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - shard1_2_data:/data/db
+      - shard1-repl2-data:/data/db
+    networks:
+      - mongo-network
 
-  shard1_3:
+  shard1-repl3:
     image: mongo:latest
-    container_name: shard1_3
-    command: ["mongod", "--shardsvr", "--replSet", "shard1ReplSet", "--bind_ip_all"]
+    command: mongod --shardsvr --replSet shard1 --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27022:27017"
-    networks:
-      - mongo-cluster2
     volumes:
-      - shard1_3_data:/data/db
+      - shard1-repl3-data:/data/db
+    networks:
+      - mongo-network
 
-  # Mongos - маршрутизатор
   mongos:
     image: mongo:latest
-    container_name: mongos
-    command: ["mongos", "--configdb", "configReplSet/config1:27017,config2:27017,config3:27017", "--bind_ip_all"]
+    command: mongos --configdb cfgreplset/configdb1:27017,configdb2:27017,configdb3:27017 --port 27017 --bind_ip 0.0.0.0
     ports:
       - "27023:27017"
+    depends_on:
+      - configdb1
+      - configdb2
+      - configdb3
+      - shard1-repl1
+      - shard1-repl2
+      - shard1-repl3
     networks:
-      - mongo-cluster2
+      - mongo-network
 
-# Определение сети
 networks:
-  mongo-cluster2:
+  mongo-network:
 
-# Определение томов для хранения данных
 volumes:
-  config1_data:
-  config2_data:
-  config3_data:
-  shard1_1_data:
-  shard1_2_data:
-  shard1_3_data:
+  configdb1-data:
+  configdb2-data:
+  configdb3-data:
+  shard1-repl1-data:
+  shard1-repl2-data:
+  shard1-repl3-data:
