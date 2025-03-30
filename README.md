@@ -61,10 +61,10 @@ sh.status()
 ## Выбор ключа шардирования и балансировка
 Импорт базы данных и создание коллекции с шардированием:
 ```sh
-docker cp ~/MongoDB-SH/airbnb_data.json config1:/airbnb_data.json
+docker cp ~/MongoDB-SH/airbnb_data.json configdb1:/airbnb_data.json
 ```
 ```sh
-docker exec -it config1 mongoimport --db airbnb --collection booking --file /airbnb_data.json
+docker exec -it configdb1 mongoimport --db airbnb --collection booking --file /airbnb_data.json
 ```
 ```js
 use airbnb
@@ -74,8 +74,8 @@ sh.shardCollection("airbnb.booking", { host_id: "hashed" })
 
 ## Нагрузочное тестирование и отказоустойчивость
 - Добавить данные в коллекцию и проверить распределение данных с помощью `sh.status()`.
-- Остановить один из узлов (`docker stop shard1_1`) и проверить доступность данных.
-- Поднять его обратно (`docker start shard1_1`) и посмотреть на восстановление репликации.
+- Остановить один из узлов (`docker stop shard1-repl1`) и проверить доступность данных.
+- Поднять его обратно (`docker start shard1-repl1`) и посмотреть на восстановление репликации.
 
 ## Настройка аутентификации и ролей
 1. Включить авторизацию, добавив в `docker-compose.yml` опцию `--auth`.
